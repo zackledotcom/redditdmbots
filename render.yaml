@@ -1,16 +1,18 @@
 services:
   - type: web
     name: redditdmbots
-    rootDir: web_dashboard  # Correct directory where app.py is located
+    rootDir: web_dashboard  # Points to the correct directory
     env: python
     region: oregon
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      python3 -m pip install --upgrade pip
+      pip install -r requirements.txt
     startCommand: gunicorn app:app
     autoDeploy: true
     envVars:
-      - key: OPENROUTER_API_KEY
-        sync: false
+      - key: FLASK_ENV
+        value: production
     preDeployCommand: |
       echo "Running pre-deploy tasks..."
     postDeployCommand: |
