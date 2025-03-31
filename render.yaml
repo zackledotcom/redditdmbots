@@ -6,11 +6,9 @@ services:
     region: oregon
     plan: free
     buildCommand: |
-      python3 -m venv venv
-      source venv/bin/activate
-      python3 -m pip install --upgrade pip
-      pip install gunicorn==21.2.0 flask-socketio==5.3.6
-      pip install -r requirements.txt
+      python3 -m pip install --user --upgrade pip
+      python3 -m pip install --user gunicorn==21.2.0 flask-socketio==5.3.6
+      python3 -m pip install --user -r requirements.txt
     startCommand: gunicorn app:app
     autoDeploy: true
     envVars:
