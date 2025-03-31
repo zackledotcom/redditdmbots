@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bot • Reddit</title>
+    <title>Reddit Bot Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 <body class="bg-[#030303] text-[#D7DADC] min-h-screen">
-    <!-- Header -->
-    <header class="h-12 border-b border-[#343536] fixed w-full top-0 z-50">
-        <nav class="container h-full flex items-center justify-between">
+    <header class="h-12 border-b border-[#343536] fixed w-full top-0 z-50 bg-[#1A1A1B]">
+        <nav class="container h-full flex items-center justify-between px-4">
             <div class="flex items-center space-x-2">
                 <i class="fa-brands fa-reddit text-[#FF4500] text-[22px]"></i>
-                <span class="text-[15px] font-semibold tracking-tight">Bot</span>
+                <span class="text-[15px] font-semibold tracking-tight">Reddit Bot Dashboard</span>
                 <span class="bot-status ml-4 text-xs text-[#818384]">
                     <i class="fa-solid fa-circle text-gray-500 mr-2"></i>Inactive
                 </span>
@@ -34,384 +31,58 @@
         </nav>
     </header>
 
-    <!-- Main -->
     <main class="pt-14 pb-8">
-        <div class="container">
-            <div class="grid grid-cols-12 gap-6">
-                <!-- Left Column: Bot Configuration -->
-                <div class="col-span-4 space-y-4">
-                    <!-- Instructions -->
-                    <div class="card">
-                        <h3 class="card-title">Instructions</h3>
-                        <div class="instructions">
-                            <p>1. Configure up to 4 bots using the sections below</p>
-                            <p>2. Each bot can monitor different subreddits</p>
-                            <p>3. Set protected users to avoid interactions</p>
-                            <p>4. Customize response style and behavior</p>
-                        </div>
-                    </div>
-
-                    <!-- Bot Accordion -->
-                    <div class="space-y-4" id="bot-accordion">
-                        <!-- Bot 1 -->
-                        <div class="card">
-                            <div class="accordion-header" onclick="toggleBot(1)">
-                                <h3 class="card-title mb-0">Bot 1 Configuration</h3>
-                                <i class="fa-solid fa-chevron-down text-[#818384] transition-transform" id="bot1-chevron"></i>
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Bot Configuration Panel -->
+                <div class="md:col-span-1 space-y-4">
+                    <div class="bg-[#1A1A1B] rounded-md p-4 border border-[#343536]">
+                        <h3 class="font-medium text-lg mb-2">Bot Configuration</h3>
+                        <form id="bot-config" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Subreddit</label>
+                                <input type="text" name="subreddit" class="w-full bg-[#272729] border border-[#343536] rounded px-3 py-2 text-sm">
                             </div>
-                            <form id="bot1-content" class="accordion-content space-y-6 mt-4">
-                                <!-- Target -->
-                                <div class="form-group">
-                                    <label>Target Subreddit</label>
-                                    <div class="input-group">
-                                        <i class="fa-regular fa-compass"></i>
-                                        <input type="text" name="subreddit" placeholder="r/subreddit" class="input" required>
-                                    </div>
-                                </div>
-
-                                <!-- Protected -->
-                                <div class="form-group">
-                                    <label>Protected Users</label>
-                                    <div class="input-group">
-                                        <i class="fa-regular fa-user"></i>
-                                        <textarea name="protected_users" placeholder="Protected usernames (one per line)" class="input"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Response Style -->
-                                <div class="form-group">
-                                    <label>Response Style</label>
-                                    <div class="input-group">
-                                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                        <select name="response_style" class="input" onchange="updateResponseStyle(this)">
-                                            <option value="chatgpt">ChatGPT-like Conversation</option>
-                                            <option value="formal">Formal</option>
-                                            <option value="casual">Casual</option>
-                                            <option value="custom">Custom Template</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- ChatGPT Settings -->
-                                <div id="chatgpt-settings" class="space-y-4">
-                                    <!-- Personality Traits -->
-                                    <div class="form-group">
-                                        <label>Personality Traits</label>
-                                        <div class="input-group">
-                                            <i class="fa-regular fa-face-smile"></i>
-                                            <div class="space-y-2 w-full">
-                                                <label class="checkbox-group">
-                                                    <input type="checkbox" name="traits" value="friendly" checked>
-                                                    <span>Friendly & Helpful</span>
-                                                </label>
-                                                <label class="checkbox-group">
-                                                    <input type="checkbox" name="traits" value="humorous">
-                                                    <span>Use Humor</span>
-                                                </label>
-                                                <label class="checkbox-group">
-                                                    <input type="checkbox" name="traits" value="empathetic">
-                                                    <span>Show Empathy</span>
-                                                </label>
-                                                <label class="checkbox-group">
-                                                    <input type="checkbox" name="traits" value="knowledgeable">
-                                                    <span>Share Knowledge</span>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Writing Style -->
-                                    <div class="form-group">
-                                        <label>Writing Style</label>
-                                        <div class="input-group">
-                                            <i class="fa-solid fa-pen-fancy"></i>
-                                            <select name="writing_style" class="input">
-                                                <option value="conversational">Conversational</option>
-                                                <option value="professional">Professional</option>
-                                                <option value="casual">Casual & Friendly</option>
-                                                <option value="enthusiastic">Enthusiastic</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Response Length -->
-                                    <div class="form-group">
-                                        <label>Response Length</label>
-                                        <div class="input-group">
-                                            <i class="fa-solid fa-text-height"></i>
-                                            <select name="response_length" class="input">
-                                                <option value="concise">Concise (2-3 sentences)</option>
-                                                <option value="moderate">Moderate (4-5 sentences)</option>
-                                                <option value="detailed">Detailed (6+ sentences)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Response Preview -->
-                                    <div class="form-group">
-                                        <label>Response Preview</label>
-                                        <div class="preview-box">
-                                            <div class="preview-header">
-                                                <i class="fa-regular fa-comment-dots"></i>
-                                                <span>Sample Response</span>
-                                            </div>
-                                            <div class="preview-content">
-                                                Hey there! Thanks for sharing your thoughts. I completely understand where you're coming from. Based on my experience, I'd suggest... What do you think about that approach?
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Custom Template -->
-                                <div id="custom-template" class="form-group" style="display: none;">
-                                    <label>Custom Response Template</label>
-                                    <div class="input-group">
-                                        <i class="fa-regular fa-comment"></i>
-                                        <textarea name="template" placeholder="Template variables: {user}, {subreddit}, {post}" class="input"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Triggers -->
-                                <div class="form-group">
-                                    <label>Trigger Keywords</label>
-                                    <div class="input-group">
-                                        <i class="fa-solid fa-bolt"></i>
-                                        <input type="text" name="triggers" placeholder="Comma-separated keywords" class="input">
-                                    </div>
-                                </div>
-
-                                <!-- Auth -->
-                                <div class="form-group">
-                                    <label>Authentication</label>
-                                    <div class="space-y-3">
-                                        <div class="input-group">
-                                            <i class="fa-regular fa-user"></i>
-                                            <input type="text" name="username" placeholder="Username" class="input">
-                                        </div>
-                                        <div class="input-group">
-                                            <i class="fa-solid fa-key"></i>
-                                            <input type="password" name="password" placeholder="Password" class="input">
-                                        </div>
-                                        <div class="input-group">
-                                            <i class="fa-solid fa-id-card"></i>
-                                            <input type="text" name="client_id" placeholder="Client ID" class="input">
-                                        </div>
-                                        <div class="input-group">
-                                            <i class="fa-solid fa-lock"></i>
-                                            <input type="password" name="client_secret" placeholder="Client Secret" class="input">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button type="submit" class="button">Initialize Bot</button>
-                            </form>
-                        </div>
-
-                        <!-- Add Bot Button -->
-                        <button class="add-bot-btn card w-full" onclick="addBot()">
-                            <i class="fa-solid fa-plus mr-2"></i>Add Bot
-                        </button>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Reddit Username</label>
+                                <input type="text" name="username" class="w-full bg-[#272729] border border-[#343536] rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Password</label>
+                                <input type="password" name="password" class="w-full bg-[#272729] border border-[#343536] rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Client ID</label>
+                                <input type="text" name="client_id" class="w-full bg-[#272729] border border-[#343536] rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Client Secret</label>
+                                <input type="password" name="client_secret" class="w-full bg-[#272729] border border-[#343536] rounded px-3 py-2 text-sm">
+                            </div>
+                            <button type="submit" class="w-full bg-[#FF4500] text-white py-2 rounded text-sm font-medium">Start Bot</button>
+                        </form>
                     </div>
                 </div>
 
-                <!-- Right Column: Activity Feed -->
-                <div class="col-span-8">
-                    <!-- Feed Header -->
-                    <div class="card mb-4 p-0">
-                        <div class="flex items-center justify-between h-[48px] px-4">
-                            <div class="flex items-center space-x-2">
-                                <button class="tab-active">
-                                    <i class="fa-solid fa-fire-flame-curved text-[#FF4500] mr-1.5"></i>Recent Activity
-                                </button>
-                                <button class="tab">
-                                    <i class="fa-regular fa-clock mr-1.5"></i>All Activity
-                                </button>
-                            </div>
-                            <div class="flex items-center">
-                                <button class="tab">
-                                    <i class="fa-solid fa-filter mr-1.5"></i>Filter
-                                </button>
+                <!-- Activity Feed -->
+                <div class="md:col-span-3">
+                    <div class="bg-[#1A1A1B] rounded-md border border-[#343536]">
+                        <div class="border-b border-[#343536] px-4 py-3 flex justify-between items-center">
+                            <h3 class="font-medium">Activity Feed</h3>
+                            <div class="flex space-x-2">
+                                <button id="start-bot" class="text-xs px-2 py-1 rounded bg-[#FF4500] text-white">Start Bot</button>
+                                <button id="stop-bot" class="text-xs px-2 py-1 rounded bg-gray-600 text-white">Stop Bot</button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Feed -->
-                    <div class="space-y-3" id="activity-feed">
-                        <!-- Activity items will be dynamically added here -->
+                        <div id="activity-feed" class="p-4 space-y-3">
+                            <!-- Activity items will be added here dynamically -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <script>
-        let botCount = 1;
-        
-        function toggleBot(id) {
-            const content = document.getElementById(`bot${id}-content`);
-            const chevron = document.getElementById(`bot${id}-chevron`);
-            
-            if (!content || !chevron) return;
-            
-            if (content.style.maxHeight && content.style.maxHeight !== '0px') {
-                content.style.maxHeight = '0px';
-                chevron.style.transform = 'rotate(0deg)';
-            } else {
-                content.style.maxHeight = content.scrollHeight + 'px';
-                chevron.style.transform = 'rotate(180deg)';
-            }
-        }
-
-        function updateResponseStyle(select) {
-            const form = select.closest('form');
-            const chatgptSettings = form.querySelector('#chatgpt-settings');
-            const customTemplate = form.querySelector('#custom-template');
-            
-            if (!chatgptSettings || !customTemplate) return;
-            
-            if (select.value === 'chatgpt') {
-                chatgptSettings.style.display = 'block';
-                customTemplate.style.display = 'none';
-                updatePreview(form);
-            } else if (select.value === 'custom') {
-                chatgptSettings.style.display = 'none';
-                customTemplate.style.display = 'block';
-            } else {
-                chatgptSettings.style.display = 'none';
-                customTemplate.style.display = 'none';
-            }
-
-            // Update accordion height
-            const accordionContent = select.closest('.accordion-content');
-            if (accordionContent && accordionContent.style.maxHeight) {
-                setTimeout(() => {
-                    accordionContent.style.maxHeight = accordionContent.scrollHeight + 'px';
-                }, 0);
-            }
-        }
-
-        function updatePreview(form) {
-            const writingStyle = form.querySelector('[name="writing_style"]')?.value || 'conversational';
-            const responseLength = form.querySelector('[name="response_length"]')?.value || 'moderate';
-            const traits = Array.from(form.querySelectorAll('[name="traits"]:checked'))
-                .map(cb => cb.value);
-            
-            let preview = '';
-            
-            if (traits.includes('friendly')) {
-                preview += 'Hey there! ';
-            } else {
-                preview += 'Hello. ';
-            }
-
-            if (traits.includes('empathetic')) {
-                preview += 'I understand where you\'re coming from. ';
-            }
-
-            if (responseLength === 'concise') {
-                preview += 'Here\'s a quick suggestion: try approaching it from a different angle.';
-            } else if (responseLength === 'moderate') {
-                preview += 'Based on my experience, I\'d suggest trying a different approach. This might help you achieve better results. What do you think?';
-            } else {
-                preview += 'Let me share a detailed perspective on this. Based on my experience and research, there are several approaches we could consider. First, we could try looking at it from a different angle. Additionally, we might want to explore alternative methods. What are your thoughts on these suggestions?';
-            }
-
-            if (traits.includes('humorous')) {
-                preview += ' 😊';
-            }
-
-            const previewContent = form.querySelector('.preview-content');
-            if (previewContent) {
-                previewContent.textContent = preview;
-            }
-        }
-
-        function addBot() {
-            if (botCount >= 4) {
-                alert('Maximum of 4 bots allowed');
-                return;
-            }
-            botCount++;
-            
-            // Clone bot1 template
-            const template = document.querySelector('#bot-accordion > div:first-child').cloneNode(true);
-            
-            // Update IDs and attributes
-            template.querySelector('h3').textContent = `Bot ${botCount} Configuration`;
-            template.querySelector('.accordion-header').setAttribute('onclick', `toggleBot(${botCount})`);
-            
-            const chevron = template.querySelector('.fa-chevron-down');
-            chevron.id = `bot${botCount}-chevron`;
-            
-            const form = template.querySelector('form');
-            form.id = `bot${botCount}-content`;
-            form.style.maxHeight = '0px';
-            
-            // Reset form fields
-            template.querySelectorAll('input, textarea, select').forEach(input => {
-                if (input.type === 'checkbox') {
-                    input.checked = input.value === 'friendly';
-                } else {
-                    input.value = '';
-                }
-            });
-            
-            // Add event listeners
-            template.querySelector('[name="response_style"]').addEventListener('change', function() {
-                updateResponseStyle(this);
-            });
-            
-            template.querySelector('[name="writing_style"]').addEventListener('change', function() {
-                updatePreview(this.closest('form'));
-            });
-            
-            template.querySelector('[name="response_length"]').addEventListener('change', function() {
-                updatePreview(this.closest('form'));
-            });
-            
-            template.querySelectorAll('[name="traits"]').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    updatePreview(this.closest('form'));
-                });
-            });
-            
-            // Insert before "Add Bot" button
-            document.querySelector('#bot-accordion').insertBefore(template, document.querySelector('.add-bot-btn'));
-        }
-
-        // Initialize event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Show first bot's content
-            const content = document.getElementById('bot1-content');
-            if (content) {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
-            
-            // Add event listeners to first bot
-            const firstBot = document.querySelector('#bot-accordion > div:first-child');
-            if (firstBot) {
-                firstBot.querySelector('[name="response_style"]')?.addEventListener('change', function() {
-                    updateResponseStyle(this);
-                });
-                
-                firstBot.querySelector('[name="writing_style"]')?.addEventListener('change', function() {
-                    updatePreview(this.closest('form'));
-                });
-                
-                firstBot.querySelector('[name="response_length"]')?.addEventListener('change', function() {
-                    updatePreview(this.closest('form'));
-                });
-                
-                firstBot.querySelectorAll('[name="traits"]').forEach(cb => {
-                    cb.addEventListener('change', function() {
-                        updatePreview(this.closest('form'));
-                    });
-                });
-                
-                // Initialize preview
-                updatePreview(firstBot.querySelector('form'));
-            }
-        });
-    </script>
+    <script src="/static/main.js"></script>
 </body>
 </html>

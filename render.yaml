@@ -1,21 +1,12 @@
 services:
   - type: web
-    name: redditdmbots
-    rootDir: web_dashboard  # Points to the correct directory
+    name: reddit-bot-dashboard
     env: python
-    region: oregon
-    plan: free
     buildCommand: |
-      python3 -m pip install --user --upgrade pip
-      python3 -m pip install --user gunicorn==21.2.0 flask-socketio==5.3.6
-      python3 -m pip install --user -r requirements.txt
-    startCommand: gunicorn app:app
-    autoDeploy: true
+      pip install -r web_dashboard/requirements.txt
+    startCommand: gunicorn -w 4 web_dashboard.app:app
     envVars:
       - key: FLASK_ENV
         value: production
-    preDeployCommand: |
-      echo "Running pre-deploy tasks..."
-    postDeployCommand: |
-      echo "Post-deploy tasks complete"
-
+      - key: CONFIG_PATH
+        value: web_dashboard/config/config.json

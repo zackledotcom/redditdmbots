@@ -1,0 +1,25 @@
+{
+    "reddit": {
+        "username": "",
+        "password": "", 
+        "client_id": "",
+        "client_secret": "",
+        "user_agent": "script:redditdmbots:v1.0 (by /u/YOUR_REDDIT_USERNAME)"
+    },
+    "bots": [
+        {
+            "id": 1,
+            "subreddit": "",
+            "protected_users": [],
+            "actions": {
+                "upvote": true,
+                "comment": true,
+                "response_message": ""
+            }
+        }
+    ],
+    "ui": {
+        "theme": "dark",
+        "do_not_disturb": []
+    }
+}
